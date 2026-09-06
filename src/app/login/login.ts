@@ -181,15 +181,22 @@ export class Login {
     }
   }
 
-  onLogin(event: Event): void {
-    event.preventDefault();
+  onSubmitCredentials(): void {
+    if (!this.email() || !this.password()) {
+      this.errorMessage.set('Por favor ingresa tu correo y contraseña.');
+      return;
+    }
+
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      const res = await this.authService.login(this.email().trim(), this.password().trim());
       this.isLoading.set(false);
-      this.authService.login(this.email(), this.password());
-    }, 500);
+      if (!res.success) {
+        this.errorMessage.set(res.message || 'Correo o contraseña incorrectos.');
+      }
+    }, 300);
   }
 
   // --- Complete Registration Flow ---

@@ -99,10 +99,10 @@ export class AuthService {
       this.http.post<{ success: boolean; sessionToken: string; user: UserProfile }>(`${this.apiUrl}/unlock`, {
         authMethod: 'PIN',
         pin: enteredPin,
-        email: this.currentUser().email
+        email: this.currentUser()?.email || undefined
       }).subscribe({
         next: (res) => {
-          if (res.success) {
+          if (res.success && res.user) {
             this.setSession(res.sessionToken, res.user);
             resolve(true);
           } else {
@@ -110,13 +110,7 @@ export class AuthService {
           }
         },
         error: () => {
-          // Local fallback for offline/demo resilience
-          if (enteredPin === this.currentUser().pinHash || enteredPin === '1234') {
-            this.setSession('demo_local_token', this.currentUser());
-            resolve(true);
-          } else {
-            resolve(false);
-          }
+          resolve(false);
         }
       });
     });
@@ -126,10 +120,10 @@ export class AuthService {
     return new Promise((resolve) => {
       this.http.post<{ success: boolean; sessionToken: string; user: UserProfile }>(`${this.apiUrl}/unlock`, {
         authMethod: 'BIOMETRIC',
-        email: this.currentUser().email
+        email: this.currentUser()?.email || undefined
       }).subscribe({
         next: (res) => {
-          if (res.success) {
+          if (res.success && res.user) {
             this.setSession(res.sessionToken, res.user);
             resolve(true);
           } else {
@@ -137,30 +131,29 @@ export class AuthService {
           }
         },
         error: () => {
-          this.setSession('demo_local_token', this.currentUser());
-          resolve(true);
+          resolve(false);
         }
       });
     });
   }
 
-  login(email: string, password?: string): Promise<boolean> {
+  login(email: string, password?: string): Promise<{ success: boolean; message?: string }> {
     return new Promise((resolve) => {
-      this.http.post<{ success: boolean; sessionToken: string; user: UserProfile }>(`${this.apiUrl}/login`, {
+      this.http.post<{ success: boolean; sessionToken: string; user: UserProfile; message?: string }>(`${this.apiUrl}/login`, {
         email,
         password
       }).subscribe({
         next: (res) => {
-          if (res.success) {
+          if (res.success && res.user) {
             this.setSession(res.sessionToken, res.user);
-            resolve(true);
+            resolve({ success: true });
           } else {
-            resolve(false);
+            resolve({ success: false, message: res.message || 'Credenciales inválidas' });
           }
         },
-        error: () => {
-          this.setSession('demo_local_token', this.currentUser());
-          resolve(true);
+        error: (err) => {
+          const msg = err.error?.message || 'Correo o contraseña incorrectos.';
+          resolve({ success: false, message: msg });
         }
       });
     });
