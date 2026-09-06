@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "NG_FORCE_NO_NODE_VERSION_CHECK=1 ng build && cp dist/CheckUp/browser/index.html dist/CheckUp/browser/404.html",
+    "build": "NG_FORCE_NO_NODE_VERSION_CHECK=1 ng build && cp dist/CheckUp/browser/index.html dist/CheckUp/browser/404.html && cp public/_redirects dist/CheckUp/browser/_redirects",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
