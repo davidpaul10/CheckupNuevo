@@ -48,7 +48,15 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       const savedAuth = localStorage.getItem('checkup_auth');
       const savedToken = localStorage.getItem('checkup_token');
+      const savedUser = localStorage.getItem('checkup_user');
       const savedPrivacy = localStorage.getItem('checkup_privacy_screen');
+
+      // Restore user if present
+      if (savedUser) {
+        try {
+          this.currentUser.set(JSON.parse(savedUser));
+        } catch {}
+      }
 
       // Restore privacy screen preference (default: true)
       if (savedPrivacy !== null) {
@@ -67,6 +75,9 @@ export class AuthService {
       next: (res) => {
         if (res.success && res.user) {
           this.currentUser.set(res.user);
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('checkup_user', JSON.stringify(res.user));
+          }
           this.privacyScreenEnabled.set(res.user.privacyBlurEnabled);
           this.biometricsAvailable.set(res.user.biometricsEnabled);
         }
@@ -200,6 +211,7 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('checkup_auth', 'true');
       localStorage.setItem('checkup_token', token);
+      localStorage.setItem('checkup_user', JSON.stringify(user));
     }
     this.resetSessionTimer();
     this.router.navigate(['/home']);
@@ -273,6 +285,7 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('checkup_auth');
       localStorage.removeItem('checkup_token');
+      localStorage.removeItem('checkup_user');
     }
     this.router.navigate(['/login']);
   }

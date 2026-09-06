@@ -24,8 +24,8 @@ export class Login {
   pinDigits = signal<string[]>(['', '', '', '']);
   currentPinIndex = signal<number>(0);
 
-  email = signal('carlos.rodriguez@checkup.ec');
-  password = signal('••••••••');
+  email = signal('');
+  password = signal('');
   rememberMe = signal(true);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -45,7 +45,7 @@ export class Login {
   regEmergencyPhone = signal<string>('');
   regEmergencyRelation = signal<string>('Familiar');
   regPinDigits = signal<string[]>(['', '', '', '']);
-  regBiometrics = signal<boolean>(false);
+  regBiometrics = signal<boolean>(true);
   regSuccessMessage = signal<string | null>(null);
 
   // Blood types options
