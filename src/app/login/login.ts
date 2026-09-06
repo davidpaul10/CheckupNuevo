@@ -181,6 +181,11 @@ export class Login {
     }
   }
 
+  onLogin(event?: Event): void {
+    if (event) event.preventDefault();
+    this.onSubmitCredentials();
+  }
+
   onSubmitCredentials(): void {
     if (!this.email() || !this.password()) {
       this.errorMessage.set('Por favor ingresa tu correo y contraseña.');
