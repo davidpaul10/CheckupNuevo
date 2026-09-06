@@ -1,0 +1,250 @@
+<div class="profile-container">
+  <!-- Top Navigation / Header Bar -->
+  <header class="profile-header">
+    <div class="header-left">
+      <div class="user-avatar-small">
+        <span>C</span>
+      </div>
+      <div class="header-titles">
+        <h1 class="header-title">Mi Perfil</h1>
+        <span class="header-subtitle">CheckUp+ ID: {{ userId() }}</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="brand-logo">CheckUp+</span>
+    </div>
+  </header>
+
+  <!-- Main Profile Body -->
+  <main class="profile-body">
+
+    <!-- Card 1: User Profile Info Card -->
+    <section class="card profile-user-card">
+      <div class="user-card-content">
+        <div class="avatar-large-wrapper">
+          <img [src]="userAvatar()" [alt]="userName()" class="avatar-large-img" />
+        </div>
+        <div class="user-details">
+          <h2 class="user-name">{{ userName() }}</h2>
+          <p class="user-id">ID: {{ userId() }}</p>
+          <p class="user-blood">Tipo: {{ bloodType() }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card 2: Privacidad y Seguridad Médica -->
+    <section class="card privacy-security-card">
+      <h3 class="card-title">Privacidad y Seguridad Médica</h3>
+
+      <!-- Confidentiality Mode Toggle -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4 class="setting-title">Modo de Confidencialidad</h4>
+          <p class="setting-desc">
+            Oculta detalles sensibles de pantalla principal para mayor protección.
+          </p>
+        </div>
+        <div class="setting-action">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="isConfidential()" 
+              (change)="toggleConfidentiality()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="row-divider"></div>
+
+      <!-- Emergency Contact -->
+      <div class="setting-row">
+        <div class="setting-info">
+          <h4 class="setting-title">Contacto de Emergencia</h4>
+          <p class="setting-value">{{ emergencyPhone() }}</p>
+          <p class="setting-subname">{{ emergencyName() }}</p>
+        </div>
+        <div class="setting-action">
+          <button class="btn-edit" (click)="openEditContact()">
+            Editar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Historial de Certificados Header -->
+    <section class="certificates-section">
+      <div class="section-header">
+        <h3 class="section-title">Historial de Certificados</h3>
+        <span class="documents-count">{{ certificates().length }} documentos</span>
+      </div>
+
+      <!-- Certificate Documents Cards -->
+      <div class="certificates-list">
+        @for (doc of certificates(); track doc.id) {
+          <div class="card cert-card" (click)="viewDocDetails(doc)">
+            <!-- Left PDF Icon -->
+            <div class="pdf-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="pdf-svg">
+                <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M14 2V8H20" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="6.5" y="17" fill="#0F172A" font-size="6" font-weight="bold" font-family="sans-serif">PDF</text>
+              </svg>
+            </div>
+
+            <!-- Middle Details -->
+            <div class="cert-info">
+              <h4 class="cert-title">{{ doc.title }}</h4>
+              <p class="cert-subtitle">{{ doc.laboratory }} • {{ doc.date }}</p>
+              <div class="status-badge-wrap">
+                <span class="status-badge" [class.badge-normal]="doc.status === 'NORMAL'">
+                  {{ doc.status }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Download Icon Button -->
+            <button class="btn-download" (click)="downloadDoc($event, doc)" [title]="'Descargar ' + doc.title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="download-icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: EDITAR CONTACTO DE EMERGENCIA        -->
+<!-- ========================================== -->
+@if (isEditingContact()) {
+  <div class="modal-overlay" (click)="closeEditContact()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Contacto de Emergencia</h3>
+        <button class="btn-close-modal" (click)="closeEditContact()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Teléfono de Emergencia</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="tempPhone" 
+            placeholder="+593 99 123 4567"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre del Contacto (Opcional)</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="tempName" 
+            placeholder="Ej: María Rodríguez (Esposa)"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeEditContact()">Cancelar</button>
+        <button class="btn-save" (click)="saveEmergencyContact()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================== -->
+<!-- MODAL: PREVIEW DE CERTIFICADO              -->
+<!-- ========================================== -->
+@if (selectedDoc(); as doc) {
+  <div class="modal-overlay" (click)="closeDocModal()">
+    <div class="modal-card doc-preview-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="doc-header-info">
+          <span class="doc-code">{{ doc.code }}</span>
+          <h3 class="modal-title">{{ doc.title }}</h3>
+        </div>
+        <button class="btn-close-modal" (click)="closeDocModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="doc-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Laboratorio</span>
+            <span class="meta-val">{{ doc.laboratory }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Fecha de Emisión</span>
+            <span class="meta-val">{{ doc.date }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Médico Responsable</span>
+            <span class="meta-val">{{ doc.doctor }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Estado</span>
+            <span class="status-badge" [class.badge-normal]="doc.status === 'NORMAL'">{{ doc.status }}</span>
+          </div>
+        </div>
+
+        <div class="pdf-preview-box">
+          <div class="pdf-sheet-sim">
+            <div class="sheet-header">
+              <span class="sheet-watermark">CheckUp+ CERTIFIED MEDICAL DOCUMENT</span>
+            </div>
+            <div class="sheet-content">
+              <div class="sheet-row"></div>
+              <div class="sheet-row short"></div>
+              <div class="sheet-row"></div>
+              <div class="sheet-row medium"></div>
+            </div>
+            <div class="sheet-footer">
+              <span class="signature-line">Firma y Sello Digital Verificado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeDocModal()">Cerrar</button>
+        <button class="btn-save" (click)="downloadDoc($event, doc); closeDocModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Descargar PDF ({{ doc.fileSize }})
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Toast Popup Notification -->
+@if (toastMessage()) {
+  <div class="toast-popup">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span>{{ toastMessage() }}</span>
+  </div>
+}

@@ -1,0 +1,476 @@
+/* Global Styles – CheckUp */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ========================================== */
+/* GLOBAL UNENCAPSULATED DARK MODE SYSTEM     */
+/* ========================================== */
+html.dark-theme,
+body.dark-theme,
+body.dark-theme html,
+body.dark-theme body {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* App Layout & Topbar */
+body.dark-theme .app-layout,
+body.dark-theme .main-content,
+body.dark-theme .full-page-content,
+body.dark-theme app-root {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .setting-link-row,
+body.dark-theme button.setting-link-row {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+body.dark-theme .app-topbar {
+  background-color: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-theme .menu-toggle-btn {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .menu-toggle-btn:hover {
+  background-color: #1e293b !important;
+}
+
+body.dark-theme .brand-text {
+  color: #00c885 !important;
+}
+
+/* Sidebar Drawer */
+body.dark-theme .side-drawer {
+  background-color: #1e293b !important;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-theme .drawer-header,
+body.dark-theme .drawer-footer {
+  border-color: #334155 !important;
+}
+
+body.dark-theme .drawer-title,
+body.dark-theme .drawer-user-name {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .drawer-user-id {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .drawer-user-box {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .drawer-item {
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .drawer-item:hover {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .drawer-item.active {
+  background-color: #00c885 !important;
+  color: #0f172a !important;
+}
+
+body.dark-theme .drawer-close-btn {
+  color: #94a3b8 !important;
+}
+
+/* Containers & Headers in all components */
+body.dark-theme app-appointments,
+body.dark-theme .settings-container,
+body.dark-theme .profile-container,
+body.dark-theme .green-pass-container,
+body.dark-theme .appointments-page,
+body.dark-theme .home-header,
+body.dark-theme .settings-header,
+body.dark-theme .profile-header,
+body.dark-theme .pass-header,
+body.dark-theme .appointments-header,
+body.dark-theme header {
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-bottom-color: #1e293b !important;
+}
+
+/* All Cards, Sheets, Panels & Modals */
+body.dark-theme .card,
+body.dark-theme .settings-card,
+body.dark-theme .profile-user-card,
+body.dark-theme .privacy-security-card,
+body.dark-theme .promo-banner,
+body.dark-theme .lab-card,
+body.dark-theme .notif-popover,
+body.dark-theme .modal-sheet,
+body.dark-theme .modal-card,
+body.dark-theme .status-card,
+body.dark-theme .qr-main-card,
+body.dark-theme .privacy-card,
+body.dark-theme .appointments-card,
+body.dark-theme .manage-modal-card,
+body.dark-theme .booking-modal-card,
+body.dark-theme .scanner-modal-card,
+body.dark-theme .result-card,
+body.dark-theme .no-labs-empty,
+body.dark-theme .patient-record-card,
+body.dark-theme .medical-result-technical-card,
+body.dark-theme .appt-summary-card,
+body.dark-theme .clinical-summary-box,
+body.dark-theme .vital-card,
+body.dark-theme .prescription-box,
+body.dark-theme .ai-interpretation-card,
+body.dark-theme .table-responsive,
+body.dark-theme .biomarkers-table {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-theme .patient-details-grid,
+body.dark-theme .time-metric-box,
+body.dark-theme .instructions-box,
+body.dark-theme .rx-card,
+body.dark-theme .icd-badge,
+body.dark-theme .appointment-card {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .modal-box,
+body.dark-theme .qr-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .modal-box .map-route-btn {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #60a5fa !important;
+}
+
+body.dark-theme .modal-box .close-btn {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .modal-box .close-btn:hover {
+  background-color: #475569 !important;
+}
+
+body.dark-theme .modal-box .card-details .label,
+body.dark-theme .modal-box .muted,
+body.dark-theme .modal-box .qr-caption,
+body.dark-theme .modal-box .helper-text {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .modal-box .card-details .value,
+body.dark-theme .modal-box .modal-header h3 {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .real-qr-image {
+  background-color: #ffffff !important;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+/* Login Page Dark Mode System */
+body.dark-theme .login-container {
+  background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%) !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .auth-card-box,
+body.dark-theme .register-card-container,
+body.dark-theme .auth-modal-box {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .feature-item-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .square-method-btn,
+body.dark-theme .pin-setup-section,
+body.dark-theme .register-prompt-card,
+body.dark-theme .key-btn {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .ai-modal-dialog,
+body.dark-theme .ai-modal-body {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .ai-tab-nav,
+body.dark-theme .ai-modal-footer,
+body.dark-theme .takeaway-card,
+body.dark-theme .faq-card {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Headings & Text across all pages */
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme .header-title,
+body.dark-theme .brand-logo,
+body.dark-theme .card-title,
+body.dark-theme .card-section-title,
+body.dark-theme .setting-title,
+body.dark-theme .user-greeting,
+body.dark-theme .checkup-plus,
+body.dark-theme .promo-title,
+body.dark-theme .labs-title,
+body.dark-theme .lab-name,
+body.dark-theme .user-name,
+body.dark-theme .section-title,
+body.dark-theme .cert-title,
+body.dark-theme .modal-title,
+body.dark-theme .modal-lab-name,
+body.dark-theme .modal-section-label,
+body.dark-theme .rating-value,
+body.dark-theme .status-title,
+body.dark-theme .result-title,
+body.dark-theme .appointments-title,
+body.dark-theme .lab-title,
+body.dark-theme .qr-label,
+body.dark-theme .info-title,
+body.dark-theme .section-label,
+body.dark-theme .empty-title,
+body.dark-theme .technical-main-title,
+body.dark-theme .block-title-row,
+body.dark-theme .block-title-row h3,
+body.dark-theme .record-title,
+body.dark-theme .patient-name,
+body.dark-theme .doc-name,
+body.dark-theme .facility-name,
+body.dark-theme .metric-val,
+body.dark-theme .cell-value,
+body.dark-theme .vital-value,
+body.dark-theme .param-name strong,
+body.dark-theme .param-val,
+body.dark-theme .findings-list li,
+body.dark-theme .findings-list li span,
+body.dark-theme .styled-bullet-list li,
+body.dark-theme .rec-col-title,
+body.dark-theme .sub-heading,
+body.dark-theme .rx-details,
+body.dark-theme .rx-details span,
+body.dark-theme .rx-instr {
+  color: #f8fafc !important;
+}
+
+/* Subtitles, Descs, Muted Text */
+body.dark-theme p,
+body.dark-theme .header-subtitle,
+body.dark-theme .setting-desc,
+body.dark-theme .user-privacy,
+body.dark-theme .promo-desc,
+body.dark-theme .modal-lab-sub,
+body.dark-theme .lab-location,
+body.dark-theme .lab-specialty,
+body.dark-theme .setting-subname,
+body.dark-theme .cert-subtitle,
+body.dark-theme .documents-count,
+body.dark-theme .privacy-text,
+body.dark-theme .status-subtitle,
+body.dark-theme .result-subtitle,
+body.dark-theme .lab-subtitle,
+body.dark-theme .info-desc,
+body.dark-theme .instructions-text,
+body.dark-theme .empty-desc,
+body.dark-theme .cell-label,
+body.dark-theme .metric-label,
+body.dark-theme .record-subtitle,
+body.dark-theme .doc-title-sub,
+body.dark-theme .doc-spec,
+body.dark-theme .doc-reg,
+body.dark-theme .facility-room,
+body.dark-theme .param-unit,
+body.dark-theme .param-ref,
+body.dark-theme .param-note,
+body.dark-theme .summary-paragraph {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .biomarkers-table th {
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-theme .biomarkers-table td {
+  border-bottom-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .user-id,
+body.dark-theme .user-blood,
+body.dark-theme .setting-value {
+  color: #cbd5e1 !important;
+}
+
+/* Search Input & Forms */
+body.dark-theme .search-bar,
+body.dark-theme .form-input,
+body.dark-theme .instructions-box {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .search-input {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .search-input::placeholder,
+body.dark-theme .form-input::placeholder {
+  color: #64748b !important;
+}
+
+/* Filter Tabs & Pills */
+body.dark-theme .filter-tab,
+body.dark-theme .tab-pill,
+body.dark-theme .lock-btn,
+body.dark-theme .scanner-trigger-btn {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .filter-tab.active,
+body.dark-theme .tab-pill.active {
+  background-color: #00c885 !important;
+  border-color: #00c885 !important;
+  color: #0f172a !important;
+}
+
+/* Dividers & Borders */
+body.dark-theme .row-divider,
+body.dark-theme .lab-card-footer,
+body.dark-theme .notif-header,
+body.dark-theme .modal-header,
+body.dark-theme .modal-footer {
+  border-color: #334155 !important;
+}
+
+body.dark-theme .notif-header,
+body.dark-theme .notif-item {
+  background-color: #1e293b !important;
+}
+
+body.dark-theme .notif-item.unread {
+  background-color: rgba(0, 200, 133, 0.12) !important;
+}
+
+body.dark-theme .notif-item-title {
+  color: #f8fafc !important;
+}
+
+/* PDF & Icons */
+body.dark-theme .pdf-icon-wrapper {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .pdf-svg path {
+  stroke: #00c885 !important;
+}
+
+body.dark-theme .pdf-svg text {
+  fill: #00c885 !important;
+}
+
+body.dark-theme .btn-download {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .btn-download:hover {
+  background-color: #0f172a !important;
+}
+
+body.dark-theme .express-btn,
+body.dark-theme .btn-edit {
+  color: #00c885 !important;
+}
+
+body.dark-theme .phone-btn {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .phone-btn svg {
+  stroke: #cbd5e1 !important;
+}
+
+body.dark-theme .promo-btn {
+  background-color: #00c885 !important;
+  border-color: #00c885 !important;
+  color: #0f172a !important;
+}
+
+/* Switches & Controls */
+body.dark-theme .slider {
+  background-color: #334155 !important;
+}
+
+body.dark-theme input:checked + .slider {
+  background-color: #00c885 !important;
+}
+
+/* Modals & Toasts */
+body.dark-theme .toast-popup {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}

@@ -1,0 +1,230 @@
+<div class="settings-container">
+  <!-- Top Page Header -->
+  <header class="settings-header">
+    <div class="header-left">
+      <h1 class="header-title">Configuración</h1>
+    </div>
+  </header>
+
+  <main class="settings-body">
+
+    <!-- Section 1: Apariencia -->
+    <section class="card settings-card">
+      <h2 class="card-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        Apariencia
+      </h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <h3 class="setting-title">Modo Oscuro</h3>
+          <p class="setting-desc">Alterna entre la interfaz clara y oscura para proteger tu vista.</p>
+        </div>
+        <div class="setting-action">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="themeService.isDarkMode()" 
+              (change)="toggleDarkMode()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Privacidad -->
+    <section class="card settings-card">
+      <h2 class="card-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Privacidad
+      </h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <h3 class="setting-title">Pantalla Privada (Anti-fugas)</h3>
+          <p class="setting-desc">Oculta tu información médica al minimizar o cambiar de app.</p>
+        </div>
+        <div class="setting-action">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="privacyScreenEnabled()" 
+              (change)="togglePrivacyScreen()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Notificaciones -->
+    <section class="card settings-card">
+      <h2 class="card-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        Notificaciones
+      </h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <h3 class="setting-title">Notificaciones Push</h3>
+          <p class="setting-desc">Recibe alertas sobre recordatorios de citas y resultados de exámenes.</p>
+        </div>
+        <div class="setting-action">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="notificationsEnabled()" 
+              (change)="toggleNotifications()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Seguridad & Biometría -->
+    <section class="card settings-card">
+      <h2 class="card-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Seguridad &amp; Biometría
+      </h2>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <h3 class="setting-title">
+            Desbloqueo Biométrico
+            <span class="optional-tag" style="background: #e2e8f0; color: #475569; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-left: 6px;">Opcional</span>
+          </h3>
+          <p class="setting-desc">Usar Face ID / Huella Dactilar al ingresar a Pase Verde (Opcional: puedes acceder siempre con tu PIN).</p>
+        </div>
+        <div class="setting-action">
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [checked]="biometricsEnabled()" 
+              (change)="toggleBiometrics()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="row-divider"></div>
+
+      <!-- PIN Change (T023) -->
+      <button class="setting-link-row" type="button" (click)="openPinModal()">
+        <div class="setting-info">
+          <h3 class="setting-title">Cambiar PIN de Acceso</h3>
+          <p class="setting-desc">Actualiza tu código PIN de 4 dígitos de forma segura.</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron-icon">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <div class="row-divider"></div>
+
+      <a [routerLink]="['/profile']" class="setting-link-row">
+        <div class="setting-info">
+          <h3 class="setting-title">Ver Datos del Perfil</h3>
+          <p class="setting-desc">Administra tu ID de usuario, tipo de sangre y contacto de emergencia.</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron-icon">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </section>
+
+    <!-- Section 5: Cerrar Sesión -->
+    <section class="card settings-card logout-card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <h3 class="setting-title logout-title">Cerrar Sesión</h3>
+          <p class="setting-desc">Saldrás de tu cuenta CheckUp+ de forma segura.</p>
+        </div>
+        <button class="btn-logout" (click)="onLogout()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logout-icon">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Cerrar Sesión
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast Popup -->
+@if (toastMessage()) {
+  <div class="toast-popup">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span>{{ toastMessage() }}</span>
+  </div>
+}
+
+<!-- PIN Change Modal (T023) -->
+@if (showPinModal()) {
+  <div class="modal-overlay" (click)="closePinModal()">
+    <div class="pin-modal-card" (click)="$event.stopPropagation()">
+      <div class="pin-modal-header">
+        <h2 class="pin-modal-title">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pin-modal-icon">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Cambiar PIN
+        </h2>
+        <button class="pin-modal-close" (click)="closePinModal()">✕</button>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="pin-steps">
+        <div class="pin-step" [class.active]="pinStep() === 'current'" [class.done]="pinStep() !== 'current'">1</div>
+        <div class="pin-step-line" [class.done]="pinStep() === 'new' || pinStep() === 'confirm'"></div>
+        <div class="pin-step" [class.active]="pinStep() === 'new'" [class.done]="pinStep() === 'confirm'">2</div>
+        <div class="pin-step-line" [class.done]="pinStep() === 'confirm'"></div>
+        <div class="pin-step" [class.active]="pinStep() === 'confirm'">3</div>
+      </div>
+
+      <p class="pin-step-label">{{ pinStepLabel }}</p>
+
+      @if (pinError()) {
+        <div class="pin-error">{{ pinError() }}</div>
+      }
+
+      <div class="pin-display">
+        @for (digit of activePinDigits; track $index) {
+          <div class="pin-circle" [class.filled]="digit !== ''">
+            @if (digit !== '') { • }
+          </div>
+        }
+      </div>
+
+      <div class="pin-keypad">
+        @for (num of ['1','2','3','4','5','6','7','8','9']; track num) {
+          <button type="button" class="key-btn" (click)="enterPinDigit(num)">{{ num }}</button>
+        }
+        <button type="button" class="key-btn special" (click)="clearPinDigits()">C</button>
+        <button type="button" class="key-btn" (click)="enterPinDigit('0')">0</button>
+        <button type="button" class="key-btn special" (click)="deletePinDigit()">⌫</button>
+      </div>
+    </div>
+  </div>
+}

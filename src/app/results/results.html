@@ -1,0 +1,725 @@
+<div class="results-container">
+  <!-- Toast Notification Overlay -->
+  @if (toastMessage()) {
+    <div class="toast-notification">
+      <div class="toast-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <span>{{ toastMessage() }}</span>
+    </div>
+  }
+
+  <!-- Header Banner -->
+  <header class="results-header">
+    <div class="header-content">
+      <div class="title-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span>Historial de Salud Digital</span>
+      </div>
+      <h1 class="page-title">Resultados de Citas Médicas</h1>
+      <p class="page-subtitle">
+        Revisa tus análisis técnicos, diagnósticos clínicos, ficha médica del paciente e interpretaciones inteligentes con IA.
+      </p>
+    </div>
+
+    <!-- Search & Filter Controls (Only shown in list view) -->
+    @if (!selectedResult) {
+      <div class="controls-bar">
+        <div class="search-box">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Buscar por médico, especialidad, código CIE-10 o examen..."
+            [value]="searchQuery()"
+            (input)="updateSearch($event)"
+          />
+        </div>
+
+        <div class="category-pills">
+          @for (cat of categories; track cat) {
+            <button
+              class="pill-btn"
+              [class.active]="selectedCategory() === cat"
+              (click)="selectCategory(cat)">
+              {{ cat }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- VISTA 1: TARJETAS / RECTÁNGULOS DE RESULTADOS DE CITAS MÉDICAS            -->
+  <!-- ========================================================================= -->
+  @if (!selectedResult) {
+    <section class="results-list-section">
+      <div class="section-top-info">
+        <h2 class="section-heading">Citas y Exámenes Registrados</h2>
+        <span class="results-count-badge">{{ filteredResults.length }} Resultados</span>
+      </div>
+
+      @if (filteredResults.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </div>
+          <h3>No se encontraron resultados</h3>
+          <p>Intenta cambiar los filtros de categoría o el texto de búsqueda.</p>
+        </div>
+      } @else {
+        <div class="results-grid">
+          @for (res of filteredResults; track res.id) {
+            <article class="result-card" (click)="openResultDetail(res.id)">
+              <div class="card-top-row">
+                <span class="category-tag">{{ res.category }}</span>
+                <span class="status-badge" [ngClass]="res.badgeClass">
+                  <span class="status-dot"></span>
+                  {{ res.status }}
+                </span>
+              </div>
+
+              <h3 class="card-title">{{ res.title }}</h3>
+
+              <div class="card-meta-list">
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <span>{{ res.appointmentDate }} ({{ res.appointmentTime }})</span>
+                </div>
+
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  <span>{{ res.doctorName }}</span>
+                </div>
+
+                <div class="meta-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  </svg>
+                  <span>{{ res.facilityName }}</span>
+                </div>
+              </div>
+
+              <div class="card-snippet-box">
+                <span class="snippet-label">Resumen Técnico:</span>
+                <p class="snippet-text">{{ res.technicalSummary }}</p>
+              </div>
+
+              <!-- Quick Vital Sign Pills -->
+              <div class="quick-vitals">
+                <span class="vital-pill">
+                  <strong>PA:</strong> {{ res.vitalSigns.bloodPressure }}
+                </span>
+                <span class="vital-pill">
+                  <strong>FC:</strong> {{ res.vitalSigns.heartRate }}
+                </span>
+                <span class="vital-pill">
+                  <strong>CIE-10:</strong> {{ res.icd10Code.split('-')[0] }}
+                </span>
+              </div>
+
+              <div class="card-footer">
+                <span class="view-detail-link">
+                  Ver Resultado Completo & Ficha
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </span>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- VISTA 2: INFORMACIÓN DETALLADA DE LA CITA MÉDICA SELECCIONADA            -->
+  <!-- ========================================================================= -->
+  @if (selectedResult; as res) {
+    <section class="detail-view-container">
+      <!-- Back Navigation Header -->
+      <div class="detail-nav-bar">
+        <button class="back-btn" (click)="closeDetail()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          <span>Volver a Mis Resultados</span>
+        </button>
+
+        <div class="detail-badge-group">
+          <span class="status-badge" [ngClass]="res.badgeClass">
+            {{ res.status }}
+          </span>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- 1. FICHA MÉDICA DEL PACIENTE (PATIENT MEDICAL RECORD HEADER)         -->
+      <!-- =================================================================== -->
+      <div class="patient-record-card">
+        <div class="record-header">
+          <div class="record-title-wrap">
+            <div class="record-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="record-title">Ficha Médica del Paciente</h2>
+              <span class="record-subtitle">Expediente Clínico Electrónico Validado</span>
+            </div>
+          </div>
+          <span class="patient-id-badge">ID: {{ patient.patientId }}</span>
+        </div>
+
+        <div class="patient-profile-body">
+          <div class="patient-main-info">
+            <img [src]="patient.avatar" [alt]="patient.fullName" class="patient-avatar-img" />
+            <div class="patient-identity">
+              <h3 class="patient-name">{{ patient.fullName }}</h3>
+              <div class="identity-tags">
+                <span class="tag-item">C.I.: {{ patient.cedula }}</span>
+                <span class="tag-item">{{ patient.age }} años ({{ patient.dob }})</span>
+                <span class="tag-item">{{ patient.gender }}</span>
+                <span class="blood-type-pill">{{ patient.bloodType }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="patient-details-grid">
+            <div class="info-cell">
+              <span class="cell-label">Biometría Corporal</span>
+              <span class="cell-value">{{ patient.weightKg }} kg | {{ patient.heightCm }} cm</span>
+              <span class="cell-sub text-success">IMC {{ patient.bmi }} ({{ patient.bmiStatus }})</span>
+            </div>
+
+            <div class="info-cell">
+              <span class="cell-label">Alergias Registradas</span>
+              <div class="pill-list">
+                @for (allergy of patient.allergies; track allergy) {
+                  <span class="allergy-pill">{{ allergy }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-cell">
+              <span class="cell-label">Condiciones / Antecedentes</span>
+              <div class="pill-list">
+                @for (condition of patient.chronicConditions; track condition) {
+                  <span class="condition-pill">{{ condition }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-cell">
+              <span class="cell-label">Contacto de Emergencia</span>
+              <span class="cell-value">{{ patient.emergencyContact.name }} ({{ patient.emergencyContact.relation }})</span>
+              <span class="cell-sub">{{ patient.emergencyContact.phone }}</span>
+            </div>
+
+            <div class="info-cell">
+              <span class="cell-label">Seguro Médico & Póliza</span>
+              <span class="cell-value">{{ patient.insurance }}</span>
+              <span class="cell-sub">N° Póliza: {{ patient.policyNumber }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- 2. RESULTADO DE LA CITA MÉDICA (EXPLICADO TÉCNICAMENTE)             -->
+      <!-- =================================================================== -->
+      <div class="medical-result-technical-card">
+        <!-- Main Result Title Header -->
+        <div class="technical-card-header">
+          <div>
+            <span class="technical-category-label">{{ res.category }} — {{ res.specialty }}</span>
+            <h2 class="technical-main-title">{{ res.title }}</h2>
+          </div>
+          <div class="icd-badge" title="Código de Clasificación Internacional de Enfermedades">
+            <span>CIE-10:</span>
+            <strong>{{ res.icd10Code }}</strong>
+          </div>
+        </div>
+
+        <!-- A. Fechas y Horas -->
+        <div class="tech-section-block">
+          <div class="block-title-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <h3>Fechas y Horas de la Cita Médica</h3>
+          </div>
+
+          <div class="time-metrics-grid">
+            <div class="time-metric-box">
+              <span class="metric-label">Fecha de Atención:</span>
+              <span class="metric-val">{{ res.appointmentDate }}</span>
+            </div>
+            <div class="time-metric-box">
+              <span class="metric-label">Horario de Consulta:</span>
+              <span class="metric-val">{{ res.appointmentTime }}</span>
+            </div>
+            <div class="time-metric-box">
+              <span class="metric-label">Emisión de Informe:</span>
+              <span class="metric-val">{{ res.issuedDate }}</span>
+            </div>
+            <div class="time-metric-box">
+              <span class="metric-label">Duración Efectiva:</span>
+              <span class="metric-val">{{ res.duration }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B. Información Médica e Institucional -->
+        <div class="tech-section-block">
+          <div class="block-title-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+            <h3>Médico Tratante e Institución</h3>
+          </div>
+
+          <div class="doctor-facility-box">
+            <div class="doc-info-col">
+              <span class="doc-title-sub">Médico Responsable:</span>
+              <h4 class="doc-name">{{ res.doctorName }}</h4>
+              <p class="doc-spec">{{ res.doctorSpecialty }}</p>
+              <span class="doc-reg">Reg. Profesional: {{ res.doctorReg }}</span>
+            </div>
+
+            <div class="facility-info-col">
+              <span class="doc-title-sub">Centro Médico / Sede:</span>
+              <h4 class="facility-name">{{ res.facilityName }}</h4>
+              <p class="facility-room">{{ res.roomNumber }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- C. Descripción Técnica y Hallazgos Clínicos -->
+        <div class="tech-section-block">
+          <div class="block-title-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <h3>Descripción Técnica y Hallazgos Clínicos</h3>
+          </div>
+
+          <div class="clinical-summary-box">
+            <p class="summary-paragraph">
+              {{ res.technicalSummary }}
+            </p>
+          </div>
+
+          <!-- Signos Vitales Registrados -->
+          <div class="sub-block-wrap">
+            <h4 class="sub-heading">Signos Vitales Registrados al Ingreso:</h4>
+            <div class="vitals-dashboard-grid">
+              <div class="vital-card">
+                <span class="vital-name">Presión Arterial</span>
+                <span class="vital-value">{{ res.vitalSigns.bloodPressure }}</span>
+                <span class="vital-status status-good">Normal</span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-name">Frecuencia Cardiaca</span>
+                <span class="vital-value">{{ res.vitalSigns.heartRate }}</span>
+                <span class="vital-status status-good">Normocardia</span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-name">Temperatura</span>
+                <span class="vital-value">{{ res.vitalSigns.temperature }}</span>
+                <span class="vital-status status-good">Afebril</span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-name">Saturación O2</span>
+                <span class="vital-value">{{ res.vitalSigns.oxygenSaturation }}</span>
+                <span class="vital-status status-good">Óptima</span>
+              </div>
+              <div class="vital-card">
+                <span class="vital-name">Frec. Respiratoria</span>
+                <span class="vital-value">{{ res.vitalSigns.respiratoryRate }}</span>
+                <span class="vital-status status-good">Eupnea</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de Biomarcadores de Laboratorio (Si aplica) -->
+          @if (res.labBiomarkers.length > 0) {
+            <div class="sub-block-wrap">
+              <h4 class="sub-heading">Análisis Técnico de Biomarcadores & Laboratorio:</h4>
+              <div class="table-responsive">
+                <table class="biomarkers-table">
+                  <thead>
+                    <tr>
+                      <th>Parámetro / Examen</th>
+                      <th>Valor Medido</th>
+                      <th>Unidad</th>
+                      <th>Rango de Referencia</th>
+                      <th>Estado Clínico</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of res.labBiomarkers; track item.name) {
+                      <tr>
+                        <td class="param-name">
+                          <strong>{{ item.name }}</strong>
+                          @if (item.notes) {
+                            <span class="param-note">{{ item.notes }}</span>
+                          }
+                        </td>
+                        <td class="param-val">{{ item.value }}</td>
+                        <td class="param-unit">{{ item.unit }}</td>
+                        <td class="param-ref">{{ item.referenceRange }}</td>
+                        <td>
+                          <span class="biomarker-status-pill" [ngClass]="item.status">
+                            {{ item.status === 'optimal' ? 'ÓPTIMO' : (item.status === 'normal' ? 'NORMAL' : 'ELEVADO LEVE') }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+
+          <!-- Hallazgos Técnicos Específicos -->
+          @if (res.technicalFindings.length > 0) {
+            <div class="sub-block-wrap">
+              <h4 class="sub-heading">Hallazgos y Observaciones Médicas:</h4>
+              <ul class="findings-list">
+                @for (finding of res.technicalFindings; track finding) {
+                  <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>{{ finding }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <!-- D. Recomendaciones y Tratamiento -->
+        <div class="tech-section-block">
+          <div class="block-title-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <h3>Recomendaciones y Prescripción Médica</h3>
+          </div>
+
+          <!-- Prescripción Farmacéutica -->
+          @if (res.prescriptions.length > 0) {
+            <div class="prescription-box">
+              <h4 class="rx-heading">Receta / Prescripción Médica:</h4>
+              @for (rx of res.prescriptions; track rx.medication) {
+                <div class="rx-card">
+                  <div class="rx-main">
+                    <span class="rx-med-name">💊 {{ rx.medication }}</span>
+                    <span class="rx-duration">Duración: {{ rx.duration }}</span>
+                  </div>
+                  <div class="rx-details">
+                    <span><strong>Dosis:</strong> {{ rx.dosage }}</span>
+                    <span><strong>Frecuencia:</strong> {{ rx.frequency }}</span>
+                  </div>
+                  <p class="rx-instr"><strong>Instrucciones:</strong> {{ rx.instructions }}</p>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="recs-grid">
+            <div class="rec-col">
+              <h4 class="rec-col-title">Indicaciones Médicas Generales:</h4>
+              <ul class="styled-bullet-list">
+                @for (rec of res.recommendations; track rec) {
+                  <li>{{ rec }}</li>
+                }
+              </ul>
+            </div>
+
+            @if (res.dietAndLifestyle.length > 0) {
+              <div class="rec-col">
+                <h4 class="rec-col-title">Estilo de Vida y Nutrición:</h4>
+                <ul class="styled-bullet-list">
+                  @for (diet of res.dietAndLifestyle; track diet) {
+                    <li>{{ diet }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- E. Seguimiento e Información de Próximas Citas -->
+        <div class="tech-section-block">
+          <div class="block-title-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <h3>Seguimiento e Información de Próximas Citas</h3>
+          </div>
+
+          <div class="follow-up-box">
+            <p class="follow-up-text">
+              <strong>Indicaciones de Seguimiento:</strong> {{ res.followUpInstructions }}
+            </p>
+          </div>
+
+          <!-- Próxima Cita Recomendada Card -->
+          <div class="next-appointment-card">
+            <div class="next-app-header">
+              <div class="next-app-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Próximo Control Programado Sugerido</span>
+              </div>
+              <span class="next-app-status">{{ res.nextAppointment.status }}</span>
+            </div>
+
+            <div class="next-app-body">
+              <div class="next-app-info">
+                <h4 class="next-date">{{ res.nextAppointment.suggestedDate }} a las {{ res.nextAppointment.suggestedTime }}</h4>
+                <p class="next-doctor">Especialidad: {{ res.nextAppointment.specialty }} — {{ res.nextAppointment.doctor }}</p>
+                <span class="next-facility">📍 {{ res.nextAppointment.facility }}</span>
+                <p class="next-notes"><em>Nota: {{ res.nextAppointment.notes }}</em></p>
+              </div>
+
+              <button class="btn-book-next" (click)="bookNextAppointment()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                <span>Agendar Esta Próxima Cita</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- 3. MÁS ABAJO DE ESO: LOS 2 BOTONES DE ACCIÓN PRINCIPALES              -->
+      <!-- =================================================================== -->
+      <div class="bottom-action-section">
+        <div class="action-section-title">
+          <h3>Acciones del Resultado Médico</h3>
+          <p>Utiliza nuestra inteligencia artificial para simplificar este informe o descarga tu certificado oficial.</p>
+        </div>
+
+        <div class="two-action-buttons-container">
+          <!-- Botón 1: Resumir con la IA -->
+          <button class="btn-action-ai" (click)="openAiModal()">
+            <div class="btn-icon-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+                <path d="M12 12L2.5 7.5"/>
+                <path d="M12 12v9.5"/>
+                <path d="M12 12l9.5-4.5"/>
+              </svg>
+            </div>
+            <div class="btn-text-content">
+              <span class="btn-primary-title">Resumir con la IA</span>
+              <span class="btn-sub-title">Explicación en lenguaje sencillo y preguntas</span>
+            </div>
+            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+
+          <!-- Botón 2: Descargar Resultado en PDF -->
+          <button class="btn-action-pdf" (click)="downloadPdfResult()">
+            <div class="btn-icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+            </div>
+            <div class="btn-text-content">
+              <span class="btn-primary-title">Descargar Resultado en PDF</span>
+              <span class="btn-sub-title">Certificado médico completo en alta resolución</span>
+            </div>
+            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- MODAL / DRAWER DE RESUMEN CON INTELIGENCIA ARTIFICIAL (IA)                 -->
+  <!-- ========================================================================= -->
+  @if (showAiModal() && selectedResult; as res) {
+    <div class="ai-modal-backdrop" (click)="closeAiModal()"></div>
+
+    <div class="ai-modal-dialog">
+      <div class="ai-modal-header">
+        <div class="ai-header-title">
+          <div class="ai-avatar-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Asistente Médico IA - CheckUp+</h3>
+            <span>Resumen inteligente para el paciente</span>
+          </div>
+        </div>
+
+        <button class="ai-close-btn" (click)="closeAiModal()" aria-label="Cerrar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs inside AI Modal -->
+      <div class="ai-tab-nav">
+        <button
+          class="ai-tab-btn"
+          [class.active]="aiTab() === 'explicacion'"
+          (click)="setAiTab('explicacion')">
+          💡 Explicación Sencilla
+        </button>
+
+        <button
+          class="ai-tab-btn"
+          [class.active]="aiTab() === 'puntos'"
+          (click)="setAiTab('puntos')">
+          📌 Puntos Clave & Acciones
+        </button>
+
+        <button
+          class="ai-tab-btn"
+          [class.active]="aiTab() === 'faq'"
+          (click)="setAiTab('faq')">
+          ❓ Preguntas Frecuentes
+        </button>
+      </div>
+
+      <!-- AI Modal Body Content -->
+      <div class="ai-modal-body">
+        @if (aiTab() === 'explicacion') {
+          <div class="ai-tab-content">
+            <div class="speech-audio-bar">
+              <span>¿Prefieres escuchar la explicación?</span>
+              <button class="btn-voice-play" (click)="toggleSpeechAi()">
+                @if (isSpeakingAi()) {
+                  <span>⏸ Pausar Audio</span>
+                } @else {
+                  <span>🔊 Reproducir Voz IA</span>
+                }
+              </button>
+            </div>
+
+            <div class="ai-explanation-card">
+              <h4>¿Qué significa este resultado en palabras simples?</h4>
+              <p class="ai-plain-text">
+                {{ res.aiSummary.plainLanguageExplanation }}
+              </p>
+            </div>
+
+            <div class="ai-highlights-grid">
+              <div class="ai-highlight-col">
+                <h5 class="col-title text-success">Aspectos Muy Positivos:</h5>
+                <ul>
+                  @for (pos of res.aiSummary.positiveAspects; track pos) {
+                    <li>✅ {{ pos }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (aiTab() === 'puntos') {
+          <div class="ai-tab-content">
+            <h4 class="ai-subhead">Conclusiones Clave de tu Consulta:</h4>
+            <div class="takeaways-list">
+              @for (point of res.aiSummary.keyTakeaways; track point) {
+                <div class="takeaway-card">
+                  <span class="takeaway-icon">📍</span>
+                  <p>{{ point }}</p>
+                </div>
+              }
+            </div>
+
+            <h4 class="ai-subhead mt-4">Tu Plan de Acción Recomendado:</h4>
+            <div class="action-checklist">
+              @for (act of res.aiSummary.actionPoints; track act) {
+                <div class="check-item">
+                  <span class="check-box">✓</span>
+                  <span>{{ act }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (aiTab() === 'faq') {
+          <div class="ai-tab-content">
+            <h4 class="ai-subhead">Preguntas habituales sobre este examen:</h4>
+            <div class="faq-accordion">
+              @for (faq of res.aiSummary.faq; track faq.question) {
+                <div class="faq-card">
+                  <h5 class="faq-q">❓ {{ faq.question }}</h5>
+                  <p class="faq-a">{{ faq.answer }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="ai-modal-footer">
+        <span class="disclaimer-text">
+          ℹ️ Este resumen es generado automáticamente por Inteligencia Artificial de CheckUp+ para facilitar la comprensión de tu diagnóstico técnico médico.
+        </span>
+        <button class="btn-close-ai" (click)="closeAiModal()">Entendido</button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,680 @@
+<div class="login-container">
+  <!-- Top Bar Floating Security Badge -->
+  <div class="login-topbar">
+    <div class="security-pill-top">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-mini-icon">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>Plataforma Médica Cifrada • Quito 2026</span>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- ── VISTA 1: REGISTRO DE USUARIO NUEVO & FICHA MÉDICA ─── -->
+  <!-- ======================================================== -->
+  @if (isRegistering()) {
+    <div class="register-layout-wrapper">
+      <div class="register-card-container">
+        <!-- Error / Success Alerts -->
+        @if (errorMessage()) {
+          <div class="error-alert">
+            <span class="alert-icon">⚠️</span>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        @if (regSuccessMessage()) {
+          <div class="success-alert">
+            <span class="alert-icon">✅</span>
+            <span>{{ regSuccessMessage() }}</span>
+          </div>
+        }
+
+        <form (submit)="onRegister($event)" class="register-form">
+          <div class="form-header">
+            <div class="logo-badge-row">
+              <div class="mini-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="logo-svg">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <span class="brand-text-sm">CheckUp+</span>
+            </div>
+            <h2 class="form-title">Crear Cuenta &amp; Ficha Médica</h2>
+            <p class="form-desc">Completa tus datos personales y médicos para registrar tu perfil de salud en PostgreSQL</p>
+          </div>
+
+          <!-- 1. Datos Personales y de Acceso -->
+          <div class="form-section-title">
+            <span>👤 1. Datos Personales y de Acceso</span>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-fullname">Nombre y Apellido <span class="required-tag">*</span></label>
+              <div class="input-wrap">
+                <input
+                  id="reg-fullname"
+                  type="text"
+                  class="form-input"
+                  [value]="regFullName()"
+                  (input)="regFullName.set($any($event.target).value)"
+                  placeholder="Ej. David Banda"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-email">Correo Electrónico <span class="required-tag">*</span></label>
+              <div class="input-wrap">
+                <input
+                  id="reg-email"
+                  type="email"
+                  class="form-input"
+                  [value]="regEmail()"
+                  (input)="regEmail.set($any($event.target).value)"
+                  placeholder="david.banda@ejemplo.com"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Contraseña (mínimo 6 caracteres) <span class="required-tag">*</span></label>
+              <div class="input-wrap">
+                <input
+                  id="reg-password"
+                  type="password"
+                  class="form-input"
+                  [value]="regPassword()"
+                  (input)="regPassword.set($any($event.target).value)"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-cedula">Cédula de Identidad / DNI</label>
+              <div class="input-wrap">
+                <input
+                  id="reg-cedula"
+                  type="text"
+                  class="form-input"
+                  [value]="regCedula()"
+                  (input)="regCedula.set($any($event.target).value)"
+                  placeholder="Ej. 1728394051"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label" for="reg-age">Edad</label>
+              <input
+                id="reg-age"
+                type="number"
+                class="form-input"
+                [value]="regAge()"
+                (input)="regAge.set($any($event.target).value ? +$any($event.target).value : null)"
+                placeholder="Ej. 28"
+                min="1"
+                max="120"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-gender">Género</label>
+              <select
+                id="reg-gender"
+                class="form-input select-input"
+                [value]="regGender()"
+                (change)="regGender.set($any($event.target).value)"
+              >
+                @for (g of genderOptions; track g) {
+                  <option [value]="g">{{ g }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-dob">Fecha Nacimiento</label>
+              <input
+                id="reg-dob"
+                type="text"
+                class="form-input"
+                [value]="regDob()"
+                (input)="regDob.set($any($event.target).value)"
+                placeholder="Ej. 14 May 1996"
+              />
+            </div>
+          </div>
+
+          <!-- 2. Ficha Antropométrica y Médica -->
+          <div class="form-section-title">
+            <span>🩺 2. Ficha Médica y Medidas Corporales</span>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label" for="reg-height">Altura (cm)</label>
+              <input
+                id="reg-height"
+                type="number"
+                class="form-input"
+                [value]="regHeightCm()"
+                (input)="regHeightCm.set($any($event.target).value ? +$any($event.target).value : null)"
+                placeholder="Ej. 175"
+                step="0.5"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-weight">Peso (kg)</label>
+              <input
+                id="reg-weight"
+                type="number"
+                class="form-input"
+                [value]="regWeightKg()"
+                (input)="regWeightKg.set($any($event.target).value ? +$any($event.target).value : null)"
+                placeholder="Ej. 72.5"
+                step="0.1"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-blood">Tipo de Sangre</label>
+              <select
+                id="reg-blood"
+                class="form-input select-input"
+                [value]="regBloodType()"
+                (change)="regBloodType.set($any($event.target).value)"
+              >
+                @for (bt of bloodTypes; track bt) {
+                  <option [value]="bt">{{ bt }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-emerg-name">Nombre Contacto Emergencia</label>
+              <input
+                id="reg-emerg-name"
+                type="text"
+                class="form-input"
+                [value]="regEmergencyName()"
+                (input)="regEmergencyName.set($any($event.target).value)"
+                placeholder="Ej. Elena Rodríguez"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-emerg-phone">Teléfono de Emergencia</label>
+              <input
+                id="reg-emerg-phone"
+                type="tel"
+                class="form-input"
+                [value]="regEmergencyPhone()"
+                (input)="regEmergencyPhone.set($any($event.target).value)"
+                placeholder="Ej. +593 99 876 5432"
+              />
+            </div>
+          </div>
+
+          <!-- 3. Configuración Obligatoria de PIN -->
+          <div class="pin-setup-section">
+            <label class="form-label">
+              🔑 3. Configurar PIN de 4 dígitos <span class="required-tag">*Requerido</span>
+            </label>
+            <p class="pin-hint">Este PIN lo usarás para ingresar rápido a tu cuenta CheckUp+</p>
+
+            <div class="pin-display">
+              @for (digit of regPinDigits(); track $index) {
+                <div class="pin-circle" [class.filled]="digit !== ''">
+                  @if (digit !== '') { • }
+                </div>
+              }
+            </div>
+
+            <div class="pin-keypad">
+              @for (num of ['1', '2', '3', '4', '5', '6', '7', '8', '9']; track num) {
+                <button type="button" class="key-btn" (click)="enterRegPinDigit(num)">
+                  {{ num }}
+                </button>
+              }
+              <button type="button" class="key-btn special" (click)="clearRegPin()" title="Borrar todo">
+                C
+              </button>
+              <button type="button" class="key-btn" (click)="enterRegPinDigit('0')">
+                0
+              </button>
+              <button type="button" class="key-btn special" (click)="deleteRegPinDigit()" title="Retroceso">
+                ⌫
+              </button>
+            </div>
+          </div>
+
+          <!-- Huella / Biometría (Opcional) -->
+          <div class="optional-bio-box">
+            <label class="checkbox-container">
+              <input 
+                type="checkbox" 
+                [checked]="regBiometrics()" 
+                (change)="regBiometrics.set($any($event.target).checked)"
+              />
+              <span class="custom-checkbox"></span>
+              <div class="checkbox-text">
+                <span class="checkbox-title">Habilitar Face ID / Huella dactilar <span class="optional-badge">Opcional</span></span>
+                <span class="checkbox-desc">Puedes activar o desactivar la biometría en cualquier momento desde tu configuración.</span>
+              </div>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-login btn-register-action" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              Guardando usuario y ficha médica en base de datos...
+            } @else {
+              <span>Completar Registro y Entrar</span>
+            }
+          </button>
+
+          <div class="toggle-mode-box">
+            <span>¿Ya tienes cuenta médica? </span>
+            <button type="button" class="link-toggle" (click)="toggleRegisterMode()">
+              Iniciar Sesión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- ======================================================== -->
+  <!-- ── VISTA 2: LOGIN ESTILO FINTECH & BOTONES COMPACTOS ─── -->
+  <!-- ======================================================== -->
+  @if (!isRegistering()) {
+    <div class="login-split-layout">
+      <!-- ── LADO IZQUIERDO: HERO DE BIENVENIDA & SALUD PREVENTIVA ── -->
+      <aside class="login-hero-panel">
+        <div class="hero-brand-top">
+          <div class="logo-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">CheckUp+</h1>
+            <span class="brand-tagline">Salud Preventiva Digital &amp; Pase Verde</span>
+          </div>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            <span>Plataforma Médica &amp; Cuidado Integral</span>
+          </div>
+
+          <h2 class="hero-heading">
+            Tu Salud y Prevención Médica en <span class="text-highlight">Buenas Manos</span>
+          </h2>
+          
+          <p class="hero-description">
+            Bienvenido a CheckUp+, la plataforma digital para gestionar tus chequeos médicos, prevención de salud sexual, resultados confidenciales y pases verdes en los mejores laboratorios de Quito.
+          </p>
+
+          <!-- 4 Features Cards -->
+          <div class="features-showcase-grid">
+            <div class="feature-item-card">
+              <div class="feature-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div class="feature-texts">
+                <h4>Privacidad &amp; Cifrado</h4>
+                <p>Historial médico 100% confidencial con acceso PIN y modo privado.</p>
+              </div>
+            </div>
+
+            <div class="feature-item-card">
+              <div class="feature-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <div class="feature-texts">
+                <h4>Citas en 3 Pasos</h4>
+                <p>Agenda en laboratorios certificados de Quito con turnos express.</p>
+              </div>
+            </div>
+
+            <div class="feature-item-card">
+              <div class="feature-icon amber">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/>
+                  <path d="M14 14h3v3h-3v-3z"/>
+                  <path d="M18 18h3v3h-3v-3z"/>
+                </svg>
+              </div>
+              <div class="feature-texts">
+                <h4>Green Pass QR</h4>
+                <p>Certificados y carnet médico con validación instantánea.</p>
+              </div>
+            </div>
+
+            <div class="feature-item-card">
+              <div class="feature-icon purple">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <div class="feature-texts">
+                <h4>IA Médica Orientativa</h4>
+                <p>Explicación técnica y sencilla de tus biomarcadores y análisis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-footer-trust">
+          <div class="trust-badge">
+            <span class="check-circle">✓</span>
+            <span>+5 Laboratorios Aliados en Quito</span>
+          </div>
+          <div class="trust-badge">
+            <span class="check-circle">✓</span>
+            <span>Resultados en Tiempo Real</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── LADO DERECHO: PANEL DE ACCESO COMPACTO ── -->
+      <section class="login-auth-panel">
+        <div class="auth-card-box">
+          <div class="auth-header">
+            <span class="auth-eyebrow">PORTAL DE ACCESO PACIENTES</span>
+            <h2 class="auth-main-title">Ingresar a tu Cuenta</h2>
+            <p class="auth-subtitle">Toca una opción para desbloquear tu cuenta:</p>
+          </div>
+
+          <!-- Error / Success Alerts -->
+          @if (errorMessage()) {
+            <div class="error-alert">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          @if (regSuccessMessage()) {
+            <div class="success-alert">
+              <span class="alert-icon">✅</span>
+              <span>{{ regSuccessMessage() }}</span>
+            </div>
+          }
+
+          <!-- ======================================================== -->
+          <!-- ── BOTONES CUADRADOS COMPACTOS (ABREN MODAL DIRECTO) ─── -->
+          <!-- ======================================================== -->
+          <div class="method-squares-grid">
+            <!-- 1. Botón Cuadrado: PIN Seguro -->
+            <button 
+              type="button" 
+              class="square-method-btn" 
+              (click)="openAuthModal('pin')"
+            >
+              <div class="square-icon-wrap pin-theme">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sq-svg">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <span class="square-label">PIN Seguro</span>
+              <span class="square-sub-label">4 dígitos</span>
+            </button>
+
+            <!-- 2. Botón Cuadrado: Huella / Face ID -->
+            <button 
+              type="button" 
+              class="square-method-btn" 
+              (click)="openAuthModal('biometric')"
+            >
+              <div class="square-icon-wrap bio-theme">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sq-svg">
+                  <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69"/>
+                  <path d="M12 6a6 6 0 0 0-6 6c0 2.22 1.21 4.15 3 5.19"/>
+                  <circle cx="12" cy="12" r="2.5"/>
+                </svg>
+              </div>
+              <span class="square-label">Face ID / Huella</span>
+              <span class="square-sub-label">Biométrico</span>
+            </button>
+
+            <!-- 3. Botón Cuadrado: Usuario / Contraseña -->
+            <button 
+              type="button" 
+              class="square-method-btn" 
+              (click)="openAuthModal('credentials')"
+            >
+              <div class="square-icon-wrap user-theme">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sq-svg">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <span class="square-label">Usuario</span>
+              <span class="square-sub-label">Contraseña</span>
+            </button>
+          </div>
+
+          <!-- Botón de Registro de Nuevo Paciente -->
+          <div class="register-prompt-card">
+            <div class="prompt-text-wrap">
+              <span class="prompt-title">¿Aún no tienes cuenta médica?</span>
+              <span class="prompt-sub">Regístrate y configura tu ficha médica en 1 minuto.</span>
+            </div>
+            <button type="button" class="btn-register-action-link" (click)="toggleRegisterMode()">
+              📝 Registrar Nuevo Paciente
+            </button>
+          </div>
+
+          <div class="demo-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="demo-icon">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>Seguridad Local: PIN demo <strong>1234</strong> o tu PIN registrado.</span>
+          </div>
+
+          <footer class="login-footer">
+            <p>© 2026 CheckUp+ Salud Digital • Quito, Ecuador</p>
+          </footer>
+        </div>
+      </section>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- ── MODAL ELEGANTE AL TOCAR CADA BOTÓN CUADRADO ────────── -->
+    <!-- ======================================================== -->
+    @if (activeAuthModal()) {
+      <div class="auth-modal-overlay" (click)="closeAuthModal()">
+        <div class="auth-modal-box" (click)="$event.stopPropagation()">
+          <!-- Modal Header -->
+          <div class="modal-auth-header">
+            <div class="modal-header-titles">
+              <span class="modal-badge-eyebrow">CHECKUP+ ACCESO SEGURO</span>
+              @if (activeAuthModal() === 'pin') {
+                <h3 class="modal-h3">Ingreso con PIN</h3>
+              }
+              @if (activeAuthModal() === 'biometric') {
+                <h3 class="modal-h3">Ingreso Biométrico</h3>
+              }
+              @if (activeAuthModal() === 'credentials') {
+                <h3 class="modal-h3">Ingreso con Usuario</h3>
+              }
+            </div>
+
+            <button type="button" class="modal-close-btn" (click)="closeAuthModal()" title="Cerrar modal">
+              ✕
+            </button>
+          </div>
+
+          <!-- Error Alert inside modal -->
+          @if (errorMessage()) {
+            <div class="error-alert">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- 1. MODAL PIN -->
+          @if (activeAuthModal() === 'pin') {
+            <div class="modal-body-content">
+              <p class="modal-instruction">Ingresa tu código PIN de 4 dígitos:</p>
+
+              <div class="pin-display">
+                @for (digit of pinDigits(); track $index) {
+                  <div class="pin-circle" [class.filled]="digit !== ''">
+                    @if (digit !== '') { • }
+                  </div>
+                }
+              </div>
+
+              <div class="pin-keypad">
+                @for (num of ['1', '2', '3', '4', '5', '6', '7', '8', '9']; track num) {
+                  <button type="button" class="key-btn" (click)="enterPinDigit(num)" [disabled]="isLoading()">
+                    {{ num }}
+                  </button>
+                }
+                <button type="button" class="key-btn special" (click)="clearPin()" title="Borrar todo">
+                  C
+                </button>
+                <button type="button" class="key-btn" (click)="enterPinDigit('0')" [disabled]="isLoading()">
+                  0
+                </button>
+                <button type="button" class="key-btn special" (click)="deletePinDigit()" title="Retroceso">
+                  ⌫
+                </button>
+              </div>
+
+              <div class="modal-quick-switch">
+                <button type="button" class="btn-switch-modal" (click)="openAuthModal('biometric')">
+                  👆 Cambiar a Huella / Face ID
+                </button>
+                <button type="button" class="btn-switch-modal" (click)="openAuthModal('credentials')">
+                  👤 Usar Correo y Contraseña
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- 2. MODAL BIOMETRÍA -->
+          @if (activeAuthModal() === 'biometric') {
+            <div class="modal-body-content bio-modal-wrap">
+              <p class="modal-instruction">Toca el sensor para verificar tu identidad:</p>
+
+              <div class="bio-sensor-area" (click)="loginWithBiometrics()">
+                <div class="bio-sensor-pulse">
+                  <div class="sensor-icon-wrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="sensor-icon">
+                      <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69"/>
+                      <path d="M12 6a6 6 0 0 0-6 6c0 2.22 1.21 4.15 3 5.19"/>
+                      <circle cx="12" cy="12" r="2.5"/>
+                    </svg>
+                  </div>
+                </div>
+                <span class="bio-prompt-text">Touch ID / Face ID listo</span>
+              </div>
+
+              <button type="button" class="btn-login" (click)="loginWithBiometrics()" [disabled]="isLoading()">
+                @if (isLoading()) {
+                  <span class="spinner"></span>
+                  Verificando biometría...
+                } @else {
+                  <span>Autenticar con Huella / Face ID</span>
+                }
+              </button>
+
+              <div class="modal-quick-switch">
+                <button type="button" class="btn-switch-modal" (click)="openAuthModal('pin')">
+                  🔑 Usar PIN de 4 dígitos
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- 3. MODAL USUARIO / CONTRASEÑA -->
+          @if (activeAuthModal() === 'credentials') {
+            <form (submit)="onLogin($event)" class="modal-body-content credentials-modal-form">
+              <p class="modal-instruction">Ingresa tus credenciales registradas:</p>
+
+              <div class="form-group">
+                <label class="form-label" for="modal-login-email">Correo Electrónico</label>
+                <div class="input-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  <input
+                    id="modal-login-email"
+                    type="text"
+                    class="form-input"
+                    [value]="email()"
+                    (input)="email.set($any($event.target).value)"
+                    placeholder="david.banda@ejemplo.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="modal-login-password">Contraseña</label>
+                <div class="input-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <input
+                    id="modal-login-password"
+                    type="password"
+                    class="form-input"
+                    [value]="password()"
+                    (input)="password.set($any($event.target).value)"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn-login" [disabled]="isLoading()">
+                @if (isLoading()) {
+                  <span class="spinner"></span>
+                  Ingresando...
+                } @else {
+                  <span>Ingresar a CheckUp+</span>
+                }
+              </button>
+
+              <div class="modal-quick-switch">
+                <button type="button" class="btn-switch-modal" (click)="openAuthModal('pin')">
+                  🔑 Ingresar con PIN de 4 dígitos
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

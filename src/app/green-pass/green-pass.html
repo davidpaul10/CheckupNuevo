@@ -1,0 +1,201 @@
+<div class="green-pass-container">
+  <!-- Top Navigation Header -->
+  <header class="pass-header">
+    <div class="user-info">
+      <div class="avatar-wrapper">
+        <div class="avatar-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="avatar-icon">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <span class="online-indicator"></span>
+      </div>
+      <h1 class="header-title">Pase Verde de Salud</h1>
+    </div>
+
+    <button class="lock-btn" title="Información protegida y cifrada">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lock-icon">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Scrollable Content -->
+  <main class="pass-body">
+
+    <!-- Status Banner Card (Image 1 top card) -->
+    <section class="status-card">
+      <div class="status-icon-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="check-svg">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="status-info">
+        <h2 class="status-title">ESTADO: AL DÍA</h2>
+        <p class="status-subtitle">Último examen: 12 Jul 2026</p>
+      </div>
+    </section>
+
+    <!-- Main QR Code Pass Box (Image 1 center card) -->
+    <section class="qr-main-card">
+      <div class="qr-preview-wrapper">
+        <div class="qr-card-inner">
+
+          <!-- Real Generated Medical QR Code -->
+          <img 
+            *ngIf="realQrDataUrl()" 
+            [src]="realQrDataUrl()" 
+            alt="Código QR de Pase Verde" 
+            class="qr-code-svg" 
+            style="width: 220px; height: 220px; border-radius: 14px; object-fit: contain;" 
+          />
+
+        </div>
+      </div>
+
+      <!-- Live Dynamic Expiry Badge -->
+      <div class="expiry-badge" (click)="startTimer()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        <span>Válido por <strong>{{ timerFormatted() }}</strong></span>
+      </div>
+    </section>
+
+    <!-- Confidentiality Privacy Banner (Image 1 bottom card) -->
+    <section class="privacy-card">
+      <div class="privacy-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shield-icon">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <p class="privacy-text">
+        Al escanear este QR, solo se verá que estás al día. Tus diagnósticos permanecen <strong>100% confidenciales.</strong>
+      </p>
+    </section>
+
+    <!-- Download PDF Button -->
+    <button class="action-pdf-btn" (click)="downloadPDF()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-svg">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <span>Descargar PDF</span>
+    </button>
+
+    <!-- Trigger QR Scanner Modal Button -->
+    <button class="scanner-trigger-btn" (click)="openScanner()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="scanner-icon">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <rect x="7" y="7" width="10" height="10" rx="1"/>
+      </svg>
+      <span>Simular Lector / Escáner de Verificación</span>
+    </button>
+
+  </main>
+</div>
+
+<!-- ========================================== -->
+<!-- EXPRESS QR SCANNER OVERLAY MODAL (IMAGE 2) -->
+<!-- ========================================== -->
+<div class="scanner-modal-backdrop" *ngIf="isScannerOpen()">
+  <div class="scanner-modal-card">
+    
+    <!-- Modal Header -->
+    <header class="modal-header">
+      <span class="modal-title">VERIFICADOR EXPRESS</span>
+      <button class="close-btn" (click)="closeScanner()" aria-label="Cerrar escáner">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Camera Viewfinder View -->
+    <div class="viewfinder-container">
+      
+      <!-- Video Element for Real Device Camera -->
+      <video #videoElement class="camera-video-feed" [class.active-feed]="isCameraActive()" autoplay playsinline muted></video>
+
+      <!-- Simulated Grid / Fallback UI -->
+      <div class="simulated-feed-bg" *ngIf="!isCameraActive()">
+        <div class="cyber-grid"></div>
+        <div class="cam-status-notice" *ngIf="cameraError()">
+          <span class="pulse-dot"></span> {{ cameraError() }}
+        </div>
+      </div>
+
+      <!-- Dashed Box Scanner Viewfinder Target (Image 2) -->
+      <div class="dashed-target-box">
+        <!-- Laser Sweep Scanning Line -->
+        <div class="laser-beam"></div>
+
+        <!-- Guidance Text -->
+        <div class="target-guidance-text">
+          Apunta la cámara al código QR del Pase Verde...
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mint Green Simulation Action Button -->
+    <button class="simulate-success-btn" (click)="simulateScanSuccess()">
+      Simular Lectura QR Exitosa
+    </button>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- SUCCESS VERIFICATION RESULT MODAL -->
+<!-- ========================================== -->
+<div class="result-modal-backdrop" *ngIf="verificationResult()">
+  <div class="result-card">
+    <div class="success-badge-circle">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    
+    <h3 class="result-title">Pase Verde Validado</h3>
+    <p class="result-subtitle">Verificación en tiempo real de CheckUp</p>
+
+    <div class="result-details-box">
+      <div class="result-row">
+        <span class="label">Paciente:</span>
+        <span class="value name">{{ verificationResult()?.patientName }}</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Estado de Salud:</span>
+        <span class="value valid-tag">✓ VÁLIDO / AL DÍA</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Último Examen:</span>
+        <span class="value">{{ verificationResult()?.date }}</span>
+      </div>
+      <div class="result-row">
+        <span class="label">Código Único:</span>
+        <span class="value code-val">{{ verificationResult()?.code }}</span>
+      </div>
+    </div>
+
+    <button class="result-dismiss-btn" (click)="closeVerificationResult()">Continuar</button>
+  </div>
+</div>
+
+<!-- Toast Message Overlay -->
+<div class="toast-popup" *ngIf="toastMessage()">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-svg">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+  <span>{{ toastMessage() }}</span>
+</div>
+
